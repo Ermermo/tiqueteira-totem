@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { gerarNumero, entrarNaFila, Senha, filas, chamarProxima, reiniciarDia, contador, emitirSenha, listaGeral, historicoChamadas, ultimasChamadas, TipoSenha, contarEmitidas, contarAtendidas } from "@/lib/senhas";
+import { gerarNumero, entrarNaFila, Senha, filas, chamarProxima, reiniciarDia, contador, emitirSenha, listaGeral, historicoChamadas, ultimasChamadas, TipoSenha, contarEmitidas, contarAtendidas, tempoMedio} from "@/lib/senhas";
 
 async function Conteudo() {
   await connection();
@@ -9,18 +9,26 @@ async function Conteudo() {
 
   const senhasFalsas: Record<string, TipoSenha> = {
     s1: "SP",
-    s2: "SG",
+    // s2: "SG",
     s3: "SP",
-    s4: "SE",
+    // s4: "SE",
   }
 
   for (let senha of Object.values(senhasFalsas)) {
     emitirSenha(senha)
   }
 
-  chamarProxima(1)?.numero
-  chamarProxima(1)?.numero
+  console.log(tempoMedio("SP"))
 
+  // function chaamaa() {
+  //   const x = chamarProxima(1)
+  //   console.log(x?.tipo, x?.duracao, x?.status)
+  // }
+
+  // chaamaa()
+  // chaamaa()
+  // chaamaa()
+  
   // for (let ficha of listaGeral) {
   //   chamarProxima(1)?.numero
     
@@ -32,12 +40,12 @@ async function Conteudo() {
   //   console.log(`Ficha: ${ficha.numero} atendida às ${hora} pelo guichê: ${ficha.guiche}`)
   // }
 
-  console.log(historicoChamadas)
-  console.log(ultimasChamadas().map(s => s.numero))
+  // console.log(historicoChamadas)
+  // console.log(ultimasChamadas().map(s => s.numero))
 
-  console.log("SP", contarEmitidas("SP"), contarAtendidas("SP"))
-  console.log("SE", contarEmitidas("SE"), contarAtendidas("SE"))
-  console.log("SG", contarEmitidas("SG"), contarAtendidas("SG"))
+  // console.log("SP", contarEmitidas("SP"), contarAtendidas("SP"))
+  // console.log("SE", contarEmitidas("SE"), contarAtendidas("SE"))
+  // console.log("SG", contarEmitidas("SG"), contarAtendidas("SG"))
 
   return <h1>Hello, world!</h1>
 }

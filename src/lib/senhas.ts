@@ -8,6 +8,8 @@ export interface Senha {
     emitidaEm: Date; 
     atendidaEm?: Date; // o "?" quer dizer: pode estar vazio
     guiche?: number;
+    status: StatusSenha;
+    duracao?: number;
 }
 
 // A geração de identificação de uma parte do numero
@@ -35,8 +37,12 @@ export function chamarProxima(guiche: number): Senha | undefined {
     if (tipo === null) return undefined; // se não tiver nenhuma ficha devolve undefined
     const senha = filas[tipo].shift() // se tiver, armazena
     if (senha) {
-        senha.atendidaEm = new Date()
-        senha.guiche = guiche
+        senha.status = Math.random() < 0.05? "descartada" : "atendida"
+        if (senha.status === "atendida") {
+            senha.atendidaEm = new Date()
+            senha.guiche = guiche
+            senha.duracao = sortearDuracao(senha.tipo)
+        }
         historicoChamadas.push(senha)
     }
     ultimoTipo = tipo
@@ -81,7 +87,7 @@ export function emitirSenha(tipo: TipoSenha): Senha {
     contador[tipo] += 1; // Guarda quantas senhas do tipo já foram emitidas hoje
     const dataAtual = new Date() // Captura a data no momento que a senha é emitida
     const sequencia = contador[tipo] // Captura e aplica a senha atual do paciente
-    const novaSenha = { numero: gerarNumero(tipo, sequencia, dataAtual), tipo, emitidaEm: dataAtual}
+    const novaSenha: Senha = { numero: gerarNumero(tipo, sequencia, dataAtual), tipo, emitidaEm: dataAtual, status: "aguardando"}
     entrarNaFila(novaSenha) // Lança a ficha do paciente na fila
     listaGeral.push(novaSenha)
     return novaSenha
@@ -97,6 +103,24 @@ export function contarEmitidas(tipo: TipoSenha): number {
     return listaGeral.filter(s => s.tipo === tipo).length
 }
 export function contarAtendidas(tipo: TipoSenha): number {
-    return historicoChamadas.filter(s => s.tipo === tipo).length
+    return listaGeral.filter(s => s.tipo === tipo && s.status === "atendida").length
+}
+
+export type StatusSenha = "aguardando" | "atendida" | "descartada"
+
+export function sortearDuracao(tipo: TipoSenha): number {
+    if (tipo === "SP") return Math.floor(Math.random() * (20 - 10 + 1) + 10);
+    if (tipo === "SG") return Math.floor(Math.random() * (8 - 2 + 1) + 2);
+    if (tipo === "SE") return Math.random() > 0? 1 : 5 
+    return 0
+}
+
+export function tempoMedio(tipo: TipoSenha): number {
+    const listaTipada = listaGeral.filter(s => s.tipo === tipo && s.status === "atendida")
+    if (listaTipada.length > 0) {
+        const somaDuracoes = listaTipada.reduce((acumulador, valorAtual) => acumulador + (valorAtual.duracao ?? 0), 0)
+        return somaDuracoes / listaTipada.length
+    }
+    return 0
 }
 
