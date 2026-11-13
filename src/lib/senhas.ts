@@ -12,12 +12,24 @@ export interface Senha {
     duracao?: number;
 }
 
+export function formatacao(data?: Date) {
+    if (data){
+        const ano = String(data.getFullYear())
+        const mes = String(data.getMonth() + 1).padStart(2,"0")
+        const dia = String(data.getDate()).padStart(2, "0")
+        const horaMin: string = new Intl.DateTimeFormat('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+        }). format(data)
+        return { ano, mes, dia, horaMin }
+    }
+    return {ano: "", mes: "", dia: "", horaMin: ""};
+}
+
 // A geração de identificação de uma parte do numero
 export function gerarNumero(tipo: TipoSenha, sequencia: number, data: Date) {
-    const ano = String(data.getFullYear()).slice(-2) // pega os últimos 2 dígitos
-    const mes = String(data.getMonth() + 1).padStart(2,"0") // mês começa com 0
-    const dia = String(data.getDate()).padStart(2, "0")
-    return `${ano}${mes}${dia}-${tipo}${String(sequencia).padStart(2, "0")}`
+    const formatado = formatacao(data)
+    return `${formatado.ano.slice(-2)}${formatado.mes}${formatado.dia}-${tipo}${String(sequencia).padStart(2, "0")}`
 }
 
 export const filas: Record<TipoSenha, Senha[]> = {
@@ -32,21 +44,22 @@ export function entrarNaFila(senha: Senha) {
 
 let ultimoTipo: TipoSenha | null = null;
 
-export function chamarProxima(guiche: number): Senha | undefined {
+export function chamarProxima(guiche: number, agora: Date = new Date()): Senha | undefined {
+    if (!expedienteAberto(agora)) return undefined;
+
     const tipo = escolherProximoTipo()
     if (tipo === null) return undefined; // se não tiver nenhuma ficha devolve undefined
     const senha = filas[tipo].shift() // se tiver, armazena
     if (senha) {
         senha.status = Math.random() < 0.05? "descartada" : "atendida"
         if (senha.status === "atendida") {
-            senha.atendidaEm = new Date()
+            senha.atendidaEm = agora
             senha.guiche = guiche
             senha.duracao = sortearDuracao(senha.tipo)
         }
         historicoChamadas.push(senha)
     }
     ultimoTipo = tipo
-    /* ultimo tipo só pode ser atualizado, se sair ficha, porque ultimoTipo é exatamente a ficha que entra nessa execucao, se não entrar nenhuma, a ultima ficha que tinha entrado continua a mesma */
     return senha
 }
 
@@ -111,7 +124,7 @@ export type StatusSenha = "aguardando" | "atendida" | "descartada"
 export function sortearDuracao(tipo: TipoSenha): number {
     if (tipo === "SP") return Math.floor(Math.random() * (20 - 10 + 1) + 10);
     if (tipo === "SG") return Math.floor(Math.random() * (8 - 2 + 1) + 2);
-    if (tipo === "SE") return Math.random() > 0? 1 : 5 
+    if (tipo === "SE") return Math.random() > 0.05 ? 1 : 5;
     return 0
 }
 
@@ -124,3 +137,55 @@ export function tempoMedio(tipo: TipoSenha): number {
     return 0
 }
 
+const tipos = Object.keys(filas) as TipoSenha[]
+
+export function resumoPorTipo(){
+    return tipos.map(s => ({ tipo: s, emitidas: contarEmitidas(s), atendidas: contarAtendidas(s), tempoMedio: tempoMedio(s)}))
+}
+
+export function totaisGerais() {
+    const emitidas = listaGeral.length
+    // Separei em listaAtendidas (devolve a lista) e atendidas (traz a quantidade de atendidas)
+    const listaAtendidas = listaGeral.filter(s => s.status === "atendida") 
+    const atendidas = listaAtendidas.length
+    let tempoMedioGeral = 0
+    if (atendidas > 0) tempoMedioGeral = listaAtendidas.reduce((acumulador, valorAtual) => acumulador + (valorAtual.duracao ?? 0), 0) / atendidas
+
+    return {emitidas, atendidas, tempoMedioGeral}
+}
+
+export function formatarDataHora(data?: Date): string {
+    if (data) {
+        const tempo = formatacao(data)
+        return `${tempo.dia}/${tempo.mes}/${tempo.ano} ${tempo.horaMin}`
+    }
+    return ""
+}
+
+export function linhasDetalhadas() {
+    return listaGeral.map(s => ({
+        numero: s.numero,
+        tipo: s.tipo,
+        emissao: formatarDataHora(s.emitidaEm),
+        atendimento: formatarDataHora(s.atendidaEm),
+        guiche: s.guiche ?? "",
+        status: s.status,
+    }))
+}
+
+export function gerarRelatorio() {
+    return ({totais: totaisGerais(), resumo: resumoPorTipo(), detalhado: linhasDetalhadas()})
+}
+
+export function encerrarExpediente() {
+    for (const tipo of tipos) {
+        for (const ficha of filas[tipo]) {
+            ficha.status = "descartada"
+        }
+        filas[tipo] = []
+    }
+}
+
+export function expedienteAberto(agora: Date): boolean {
+    return agora.getHours() >= 7 && agora.getHours() < 17
+}

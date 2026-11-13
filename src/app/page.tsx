@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { gerarNumero, entrarNaFila, Senha, filas, chamarProxima, reiniciarDia, contador, emitirSenha, listaGeral, historicoChamadas, ultimasChamadas, TipoSenha, contarEmitidas, contarAtendidas, tempoMedio} from "@/lib/senhas";
+import { gerarNumero, entrarNaFila, Senha, filas, chamarProxima, reiniciarDia, contador, emitirSenha, listaGeral, historicoChamadas, ultimasChamadas, TipoSenha, contarEmitidas, contarAtendidas, tempoMedio, resumoPorTipo, totaisGerais, formatarDataHora, linhasDetalhadas, gerarRelatorio, encerrarExpediente, expedienteAberto, contarFila } from "@/lib/senhas";
 
 async function Conteudo() {
   await connection();
@@ -9,26 +9,36 @@ async function Conteudo() {
 
   const senhasFalsas: Record<string, TipoSenha> = {
     s1: "SP",
-    // s2: "SG",
+    s2: "SG",
     s3: "SP",
-    // s4: "SE",
+    s4: "SE",
   }
 
   for (let senha of Object.values(senhasFalsas)) {
     emitirSenha(senha)
   }
 
-  console.log(tempoMedio("SP"))
+  function chamar(a: Date) {
+    const x = chamarProxima(1, new Date(a))
+    // console.log(x?.tipo, x?.duracao, x?.status)
+  }
 
-  // function chaamaa() {
-  //   const x = chamarProxima(1)
-  //   console.log(x?.tipo, x?.duracao, x?.status)
-  // }
+  console.log('a', contarFila("SP"))
+  chamar(new Date(2026, 10, 13, 6, 0))
+  chamar(new Date(2026, 10, 13, 8, 0))
+  console.log(contarFila("SP"))
 
-  // chaamaa()
-  // chaamaa()
-  // chaamaa()
+  // console.log(gerarNumero("SP", 1, new Date()))
+
+  // console.log(formatarDataHora(new Date()))
+  // console.log(formatarDataHora(undefined))
   
+  // console.log(linhasDetalhadas())
+  
+  // encerrarExpediente()
+  // console.log(gerarRelatorio())
+  // console.log(filas)
+
   // for (let ficha of listaGeral) {
   //   chamarProxima(1)?.numero
     
