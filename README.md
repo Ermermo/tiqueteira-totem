@@ -67,3 +67,10 @@ As regras ficam em `lib/senhas.ts`; as telas só chamam essas funções por meio
 - [ ] Encerramento automático às 17h, e restrito a um supervisor (hoje é manual e sem login).
 - [ ] Painel com SSE ou WebSocket no lugar de atualizar a cada 3 segundos.
 - [ ] Separar "chamar" de "confirmar presença" (hoje o sorteio da ausência acontece na própria chamada).
+
+
+## Como foi feito
+ 
+- **Regras do sistema** (`src/lib/senhas.ts`): escritas pelo autor.
+- **Front-end** (telas, componentes, tema claro e escuro e Server Actions): desenvolvido em grande parte com o Claude, a partir de uma imagem de referência de estilo, e depois testado e ajustado pelo autor.
+- **Fluxo do sistema:** diagrama gerado no Miro a partir do documento de requisitos da disciplina.
