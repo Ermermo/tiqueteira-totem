@@ -1,69 +1,34 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { gerarNumero, entrarNaFila, Senha, filas, chamarProxima, reiniciarDia, contador, emitirSenha, listaGeral, historicoChamadas, ultimasChamadas, TipoSenha, contarEmitidas, contarAtendidas, tempoMedio, resumoPorTipo, totaisGerais, formatarDataHora, linhasDetalhadas, gerarRelatorio, encerrarExpediente, expedienteAberto, contarFila } from "@/lib/senhas";
+import { HeartPulse, FlaskConical, Users, Ticket, Check, Clock } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { contarFila, totaisGerais } from "@/lib/senhas";
 
-async function Conteudo() {
+// Parte dinâmica: depende do momento do acesso, por isso fica separada e dentro do <Suspense>
+async function VisaoGeral() {
   await connection();
-  
-  reiniciarDia()
+  const totais = totaisGerais();
+  const icone = { size: 40, strokeWidth: 1.25 };
 
-  const senhasFalsas: Record<string, TipoSenha> = {
-    s1: "SP",
-    s2: "SG",
-    s3: "SP",
-    s4: "SE",
-  }
-
-  for (let senha of Object.values(senhasFalsas)) {
-    emitirSenha(senha)
-  }
-
-  function chamar(a: Date) {
-    const x = chamarProxima(1, new Date(a))
-    // console.log(x?.tipo, x?.duracao, x?.status)
-  }
-
-  console.log('a', contarFila("SP"))
-  chamar(new Date(2026, 10, 13, 6, 0))
-  chamar(new Date(2026, 10, 13, 8, 0))
-  console.log(contarFila("SP"))
-
-  // console.log(gerarNumero("SP", 1, new Date()))
-
-  // console.log(formatarDataHora(new Date()))
-  // console.log(formatarDataHora(undefined))
-  
-  // console.log(linhasDetalhadas())
-  
-  // encerrarExpediente()
-  // console.log(gerarRelatorio())
-  // console.log(filas)
-
-  // for (let ficha of listaGeral) {
-  //   chamarProxima(1)?.numero
-    
-  //   const hora = ficha.atendidaEm?.toLocaleTimeString('pt-BR', {
-  //     hour: '2-digit',
-  //     minute: '2-digit',
-  //   })
-
-  //   console.log(`Ficha: ${ficha.numero} atendida às ${hora} pelo guichê: ${ficha.guiche}`)
-  // }
-
-  // console.log(historicoChamadas)
-  // console.log(ultimasChamadas().map(s => s.numero))
-
-  // console.log("SP", contarEmitidas("SP"), contarAtendidas("SP"))
-  // console.log("SE", contarEmitidas("SE"), contarAtendidas("SE"))
-  // console.log("SG", contarEmitidas("SG"), contarAtendidas("SG"))
-
-  return <h1>Hello, world!</h1>
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Card titulo="Fila prioritária" valor={contarFila("SP")} cor="text-rose-300" icone={<HeartPulse {...icone} />} />
+      <Card titulo="Fila de exames" valor={contarFila("SE")} cor="text-amber-300" icone={<FlaskConical {...icone} />} />
+      <Card titulo="Fila geral" valor={contarFila("SG")} cor="text-sky-300" icone={<Users {...icone} />} />
+      <Card titulo="Emitidas hoje" valor={totais.emitidas} cor="text-violet-300" icone={<Ticket {...icone} />} />
+      <Card titulo="Atendidas hoje" valor={totais.atendidas} cor="text-emerald-300" icone={<Check {...icone} />} />
+      <Card titulo="Tempo médio" valor={`${Math.round(totais.tempoMedioGeral)} min`} cor="text-indigo-300" icone={<Clock {...icone} />} />
+    </div>
+  );
 }
 
 export default function Home() {
   return (
-    <Suspense fallback={<p>Carregando...</p>}>
-      <Conteudo />
-    </Suspense>
+    <section>
+      <h1 className="mb-4 text-lg font-semibold">Visão geral</h1>
+      <Suspense fallback={<p className="text-sm text-[#a3a7c8]">Carregando...</p>}>
+        <VisaoGeral />
+      </Suspense>
+    </section>
   );
 }

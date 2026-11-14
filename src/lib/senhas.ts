@@ -187,5 +187,6 @@ export function encerrarExpediente() {
 }
 
 export function expedienteAberto(agora: Date): boolean {
-    return agora.getHours() >= 7 && agora.getHours() < 17
+    // return agora.getHours() >= 7 && agora.getHours() < 17
+    return true
 }
