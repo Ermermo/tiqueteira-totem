@@ -1,53 +1,48 @@
-import type { Senha, TipoSenha } from "@/lib/senhas";
-
-// Mesmas cores dos cartões da Visão geral e do totem
-const corDoTipo: Record<TipoSenha, string> = {
-  SP: "bg-rose-50 text-rose-400",
-  SE: "bg-amber-50 text-amber-500",
-  SG: "bg-sky-50 text-sky-500",
-};
+import { TipoBadge } from "@/components/ui/TipoBadge";
+import type { Senha } from "@/lib/senhas";
 
 // Componente só de desenho: recebe as chamadas prontas e não sabe de onde vieram
 export function PainelChamadas({ chamadas }: { chamadas: Senha[] }) {
   if (chamadas.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow-sm">
-        <p className="text-sm text-[#a3a7c8]">Nenhuma senha chamada ainda.</p>
+      <div className="rounded-xl border border-line bg-surface p-6">
+        <p className="text-sm text-muted">Nenhuma senha chamada ainda.</p>
       </div>
     );
   }
 
-  // A lista vem com a mais recente primeiro: ela ganha destaque, as outras ficam embaixo
+  // A mais recente vem primeiro: ela ganha destaque, as outras ficam na lista
   const [atual, ...anteriores] = chamadas;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <div className="rounded-lg bg-white p-8 shadow-sm">
-        <p className="text-sm text-[#a3a7c8]">Senha chamada</p>
-        <p className="mt-2 text-6xl font-semibold tabular-nums text-[#5b5f8d]">{atual.numero}</p>
-        {/* A senha de quem não compareceu não tem guichê: nesse caso mostramos só o número */}
+      <div className="rounded-xl border border-line bg-surface">
+        <div className="p-8">
+          <p className="text-sm text-muted">Senha chamada</p>
+          <p className="mt-2 font-display text-7xl font-semibold tabular-nums tracking-tight">{atual.numero}</p>
+        </div>
+        {/* Quem não compareceu não tem guichê: nesse caso mostramos só o número */}
         {atual.guiche !== undefined && (
-          <p className="mt-6 text-3xl font-semibold text-indigo-500">Guichê {atual.guiche}</p>
+          <div className="border-t border-dashed border-line p-8">
+            <p className="text-sm text-muted">Dirija-se ao</p>
+            <p className="mt-1 font-display text-4xl font-semibold text-accent">Guichê {atual.guiche}</p>
+          </div>
         )}
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow-sm">
-        <h2 className="mb-3 text-sm text-[#a3a7c8]">Chamadas anteriores</h2>
+      <div className="rounded-xl border border-line bg-surface p-6">
+        <h2 className="mb-3 text-sm text-muted">Chamadas anteriores</h2>
         {anteriores.length === 0 ? (
-          <p className="text-sm text-[#a3a7c8]">Ainda não há anteriores.</p>
+          <p className="text-sm text-muted">Ainda não há anteriores.</p>
         ) : (
-          <ol className="space-y-2">
+          <ol className="divide-y divide-line">
             {anteriores.map((senha) => (
-              <li key={senha.numero} className="flex items-center justify-between gap-3">
+              <li key={senha.numero} className="flex items-center justify-between gap-3 py-2.5">
                 <span className="flex items-center gap-2">
-                  <span className={`rounded px-2 py-0.5 text-xs font-semibold ${corDoTipo[senha.tipo]}`}>
-                    {senha.tipo}
-                  </span>
-                  <span className="font-semibold tabular-nums text-[#5b5f8d]">{senha.numero}</span>
+                  <TipoBadge tipo={senha.tipo} />
+                  <span className="font-semibold tabular-nums">{senha.numero}</span>
                 </span>
-                <span className="text-sm text-[#a3a7c8]">
-                  {senha.guiche !== undefined ? `Guichê ${senha.guiche}` : ""}
-                </span>
+                <span className="text-sm text-muted">{senha.guiche !== undefined ? `Guichê ${senha.guiche}` : ""}</span>
               </li>
             ))}
           </ol>

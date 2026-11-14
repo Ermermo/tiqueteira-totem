@@ -4,7 +4,7 @@ import { TotemSenhas } from "@/components/totem/TotemSenhas";
 export default function TotemPage() {
   return (
     <section>
-      <h1 className="mb-4 text-lg font-semibold">Retirar senha</h1>
+      <h1 className="mb-6 font-display text-2xl font-semibold tracking-tight">Retirar senha</h1>
       <TotemSenhas />
     </section>
   );

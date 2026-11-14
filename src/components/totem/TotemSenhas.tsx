@@ -7,9 +7,9 @@ import { emitirSenhaAction } from "@/app/actions";
 import type { TipoSenha } from "@/lib/senhas";
 
 const opcoes = [
-  { tipo: "SP", titulo: "Senha prioritária", descricao: "Atendimento prioritário", cor: "text-rose-300", Icone: HeartPulse },
-  { tipo: "SE", titulo: "Retirada de exames", descricao: "Atendimento rápido", cor: "text-amber-300", Icone: FlaskConical },
-  { tipo: "SG", titulo: "Senha geral", descricao: "Atendimento geral", cor: "text-sky-300", Icone: Users },
+  { tipo: "SP", titulo: "Senha prioritária", descricao: "Atendimento prioritário", tom: "bg-sp-soft text-sp", Icone: HeartPulse },
+  { tipo: "SE", titulo: "Retirada de exames", descricao: "Atendimento rápido", tom: "bg-se-soft text-se", Icone: FlaskConical },
+  { tipo: "SG", titulo: "Senha geral", descricao: "Atendimento geral", tom: "bg-sg-soft text-sg", Icone: Users },
 ] as const;
 
 export function TotemSenhas() {
@@ -25,34 +25,36 @@ export function TotemSenhas() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-3">
-        {opcoes.map(({ tipo, titulo, descricao, cor, Icone }) => (
+        {opcoes.map(({ tipo, titulo, descricao, tom, Icone }) => (
           <button
             key={tipo}
             type="button"
             onClick={() => pedirSenha(tipo)}
             disabled={pendente}
-            className="flex flex-col items-start gap-6 rounded-lg bg-white p-6 text-left shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-indigo-400 disabled:opacity-60"
+            className="flex items-center gap-4 rounded-xl border border-line bg-surface p-5 text-left transition-colors hover:border-accent hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-60"
           >
-            <span className={cor}>
-              <Icone size={48} strokeWidth={1.25} />
+            <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg ${tom}`}>
+              <Icone size={28} strokeWidth={1.5} />
             </span>
             <span>
-              <span className="block text-lg font-semibold text-[#5b5f8d]">{titulo}</span>
-              <span className="block text-sm text-[#a3a7c8]">{descricao}</span>
+              <span className="block font-display text-lg font-semibold">{titulo}</span>
+              <span className="block text-sm text-muted">{descricao}</span>
             </span>
           </button>
         ))}
       </div>
 
-      <div aria-live="polite" className="rounded-lg bg-white p-6 shadow-sm">
+      <div aria-live="polite" className="rounded-xl border border-line bg-surface">
         {numero ? (
           <>
-            <p className="text-sm text-[#a3a7c8]">Sua senha</p>
-            <p className="mt-1 text-4xl font-semibold tabular-nums text-[#5b5f8d]">{numero}</p>
-            <p className="mt-2 text-sm text-[#a3a7c8]">Aguarde ser chamado no painel.</p>
+            <div className="p-6">
+              <p className="text-sm text-muted">Sua senha</p>
+              <p className="mt-1 font-display text-5xl font-semibold tabular-nums tracking-tight">{numero}</p>
+            </div>
+            <p className="border-t border-dashed border-line px-6 py-4 text-sm text-muted">Aguarde ser chamado no painel.</p>
           </>
         ) : (
-          <p className="text-sm text-[#a3a7c8]">Escolha o tipo de atendimento para retirar a senha.</p>
+          <p className="p-6 text-sm text-muted">Escolha o tipo de atendimento para retirar a senha.</p>
         )}
       </div>
     </div>

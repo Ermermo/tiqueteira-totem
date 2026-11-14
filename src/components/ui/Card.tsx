@@ -1,21 +1,24 @@
 import type { ReactNode } from "react";
 
-type CardProps = {
-  titulo: string;
-  valor: string | number;
-  icone: ReactNode;
-  cor: string; // classe de cor do ícone, ex.: "text-rose-300"
+// Cada tom casa uma cor forte (ícone) com a versão suave (fundo do ícone)
+const tons = {
+  sp: "bg-sp-soft text-sp",
+  se: "bg-se-soft text-se",
+  sg: "bg-sg-soft text-sg",
+  ok: "bg-ok-soft text-ok",
+  accent: "bg-accent-soft text-accent",
 };
 
-// Cartão branco da visão geral: número pequeno em cima, nome embaixo, ícone à direita
-export function Card({ titulo, valor, icone, cor }: CardProps) {
+type CardProps = { titulo: string; valor: string | number; icone: ReactNode; tom: keyof typeof tons };
+
+export function Card({ titulo, valor, icone, tom }: CardProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white px-6 py-5 shadow-sm">
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-line bg-surface p-5">
       <div>
-        <p className="text-sm text-[#a3a7c8]">{valor}</p>
-        <p className="mt-1 text-base font-semibold text-[#5b5f8d]">{titulo}</p>
+        <p className="font-display text-3xl font-semibold leading-none tabular-nums">{valor}</p>
+        <p className="mt-2 text-sm text-muted">{titulo}</p>
       </div>
-      <span className={cor}>{icone}</span>
+      <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${tons[tom]}`}>{icone}</span>
     </div>
   );
 }

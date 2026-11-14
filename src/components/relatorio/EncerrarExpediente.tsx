@@ -30,7 +30,7 @@ export function EncerrarExpediente() {
             type="button"
             onClick={encerrar}
             disabled={pendente}
-            className="rounded-lg bg-rose-400 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400 disabled:opacity-60"
+            className="rounded-lg border border-bad bg-bad-soft px-4 py-2 text-sm font-semibold text-bad transition-colors hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bad disabled:opacity-60"
           >
             Confirmar
           </button>
@@ -38,7 +38,7 @@ export function EncerrarExpediente() {
             type="button"
             onClick={() => setConfirmando(false)}
             disabled={pendente}
-            className="rounded-lg px-4 py-2 text-sm text-[#a3a7c8] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-indigo-400"
+            className="rounded-lg px-4 py-2 text-sm text-muted transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent"
           >
             Cancelar
           </button>
@@ -50,13 +50,13 @@ export function EncerrarExpediente() {
             setMensagem(null);
             setConfirmando(true);
           }}
-          className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-indigo-400"
+          className="flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent"
         >
           <Power size={16} strokeWidth={1.5} />
           Encerrar expediente
         </button>
       )}
-      <span aria-live="polite" className="text-sm text-[#a3a7c8]">{mensagem}</span>
+      <span aria-live="polite" className="text-sm text-muted">{mensagem}</span>
     </div>
   );
 }

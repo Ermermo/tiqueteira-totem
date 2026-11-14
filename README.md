@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Controle de Atendimento
 
-## Getting Started
+Sistema de senhas para filas de laboratório médico. O cliente retira a senha no **totem**, a atendente chama a próxima no **guichê**, o **painel** mostra as últimas chamadas e o **relatório** resume o dia.
 
-First, run the development server:
+Projeto de disciplina, feito em Next.js (App Router), TypeScript e Tailwind CSS v4.
+
+## Como rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Telas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rota | Para quem | O que faz |
+| --- | --- | --- |
+| `/` | Todos | Visão geral: filas aguardando e totais do dia |
+| `/totem` | Cliente | Retira a senha (SP, SE ou SG) |
+| `/guiche` | Atendente | Escolhe o guichê e chama a próxima senha |
+| `/painel` | Cliente | Últimas 5 chamadas, atualiza a cada 3 segundos |
+| `/relatorio` | Gestão | Totais, resumo por tipo e relatório detalhado; botão de encerrar expediente |
 
-## Learn More
+## Regras implementadas
 
-To learn more about Next.js, take a look at the following resources:
+- **Tipos:** SP (prioritária), SE (retirada de exames) e SG (geral).
+- **Numeração:** `AAMMDD-TTSQ` (ex.: `261114-SP01`), com a sequência reiniciada todo dia, por tipo.
+- **Ordem de chamada:** alterna `SP → SE ou SG → SP`. Depois de uma SP, tenta SE e depois SG; depois de SE ou SG, tenta SP.
+- **Tempo médio (TM):** sorteado por atendimento. SP entre 10 e 20 min, SG entre 2 e 8 min, SE 1 min (5% das vezes, 5 min).
+- **Ausência:** cerca de 5% dos clientes chamados não comparecem. A senha é descartada, sem data de atendimento nem guichê.
+- **Expediente:** chamadas das 7h às 17h. Ao encerrar, as senhas que sobraram são descartadas.
+- **Relatório do dia:** totais, resumo por tipo e linha por senha.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+  app/            rotas (cada pasta com page.tsx vira uma página) e actions.ts (Server Actions)
+  components/     layout/, ui/, totem/, guiche/, painel/, relatorio/
+  lib/
+    senhas.ts     regras do sistema, sem nada de tela
+    config.ts     configurações (lista de guichês)
+```
 
-## Deploy on Vercel
+As regras ficam em `lib/senhas.ts`; as telas só chamam essas funções por meio das Server Actions. As cores estão todas no `app/globals.css`, com tema claro e escuro.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Avisos para teste
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **O horário do expediente está desativado.** Em `lib/senhas.ts`, a função `expedienteAberto` devolve `true` direto, e a regra real (7h às 17h) está comentada. Para reativar, remova o `return true` e descomente a regra.
+- **O botão "Reiniciar dia (teste)"** do guichê só existe em desenvolvimento, e o servidor recusa a ação em produção.
+- **Os dados ficam na memória do servidor.** Reiniciar o servidor, ou salvar certos arquivos no modo de desenvolvimento, zera filas e relatório.
+
+## Decisões sobre pontos ambíguos do documento
+
+- **Ordem entre SE e SG:** depois de uma SP, a SE é preferida à SG. Com muitas SE na fila, a SG pode esperar bastante.
+- **Painel:** mostra as 5 últimas senhas **chamadas**, inclusive as de clientes ausentes, que aparecem sem guichê.
+- **Emissão fora do horário:** só a chamada é restrita ao expediente; o totem continua emitindo senhas.
+
+## TO-DO
+
+- [ ] Reativar a regra real do horário em `expedienteAberto`.
+- [ ] Guardar os dados em banco (MySQL 8, como pede o documento), para sobreviver a reinícios.
+- [ ] Relatório mensal (depende do banco, para guardar os dias anteriores).
+- [ ] Revisar a prioridade da SG (evitar que fique muito tempo esperando).
+- [ ] Encerramento automático às 17h, e restrito a um supervisor (hoje é manual e sem login).
+- [ ] Painel com SSE ou WebSocket no lugar de atualizar a cada 3 segundos.
+- [ ] Separar "chamar" de "confirmar presença" (hoje o sorteio da ausência acontece na própria chamada).

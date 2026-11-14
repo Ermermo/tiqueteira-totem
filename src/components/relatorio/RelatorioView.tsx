@@ -7,31 +7,31 @@ import type { gerarRelatorio, StatusSenha } from "@/lib/senhas";
 type Relatorio = ReturnType<typeof gerarRelatorio>;
 
 const corDoStatus: Record<StatusSenha, string> = {
-  atendida: "bg-emerald-50 text-emerald-500",
-  descartada: "bg-rose-50 text-rose-400",
-  aguardando: "bg-slate-100 text-slate-500",
+  atendida: "bg-ok-soft text-ok",
+  descartada: "bg-bad-soft text-bad",
+  aguardando: "bg-surface-2 text-muted",
 };
 
 const minutos = (valor: number) => `${Math.round(valor)} min`;
 
 export function RelatorioView({ relatorio }: { relatorio: Relatorio }) {
   const { totais, resumo, detalhado } = relatorio;
-  const icone = { size: 40, strokeWidth: 1.25 };
+  const icone = { size: 24, strokeWidth: 1.5 };
 
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card titulo="Total emitidas" valor={totais.emitidas} cor="text-violet-300" icone={<Ticket {...icone} />} />
-        <Card titulo="Total atendidas" valor={totais.atendidas} cor="text-emerald-300" icone={<Check {...icone} />} />
-        <Card titulo="Tempo médio" valor={minutos(totais.tempoMedioGeral)} cor="text-indigo-300" icone={<Clock {...icone} />} />
+        <Card titulo="Total emitidas" valor={totais.emitidas} tom="accent" icone={<Ticket {...icone} />} />
+        <Card titulo="Total atendidas" valor={totais.atendidas} tom="ok" icone={<Check {...icone} />} />
+        <Card titulo="Tempo médio" valor={minutos(totais.tempoMedioGeral)} tom="accent" icone={<Clock {...icone} />} />
       </div>
 
       <section>
-        <h2 className="mb-3 text-base font-semibold">Resumo por prioridade</h2>
-        <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+        <h2 className="mb-3 font-display text-lg font-semibold">Resumo por prioridade</h2>
+        <div className="overflow-x-auto rounded-xl bg-surface border border-line">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="text-[#a3a7c8]">
+              <tr className="text-xs uppercase tracking-wider text-muted">
                 <th className="px-6 py-3 font-normal">Tipo</th>
                 <th className="px-6 py-3 font-normal">Emitidas</th>
                 <th className="px-6 py-3 font-normal">Atendidas</th>
@@ -40,7 +40,7 @@ export function RelatorioView({ relatorio }: { relatorio: Relatorio }) {
             </thead>
             <tbody>
               {resumo.map((linha) => (
-                <tr key={linha.tipo} className="border-t border-slate-100">
+                <tr key={linha.tipo} className="border-t border-line transition-colors hover:bg-surface-2">
                   <td className="px-6 py-3"><TipoBadge tipo={linha.tipo} /></td>
                   <td className="px-6 py-3 tabular-nums">{linha.emitidas}</td>
                   <td className="px-6 py-3 tabular-nums">{linha.atendidas}</td>
@@ -54,16 +54,16 @@ export function RelatorioView({ relatorio }: { relatorio: Relatorio }) {
       </section>
 
       <section>
-        <h2 className="mb-3 text-base font-semibold">Relatório detalhado</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold">Relatório detalhado</h2>
         {detalhado.length === 0 ? (
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <p className="text-sm text-[#a3a7c8]">Nenhuma senha emitida hoje.</p>
+          <div className="rounded-xl bg-surface p-6 border border-line">
+            <p className="text-sm text-muted">Nenhuma senha emitida hoje.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-xl bg-surface border border-line">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="text-[#a3a7c8]">
+                <tr className="text-xs uppercase tracking-wider text-muted">
                   <th className="px-6 py-3 font-normal">Número</th>
                   <th className="px-6 py-3 font-normal">Tipo</th>
                   <th className="px-6 py-3 font-normal">Emissão</th>
@@ -74,7 +74,7 @@ export function RelatorioView({ relatorio }: { relatorio: Relatorio }) {
               </thead>
               <tbody>
                 {detalhado.map((linha) => (
-                  <tr key={linha.numero} className="border-t border-slate-100">
+                  <tr key={linha.numero} className="border-t border-line transition-colors hover:bg-surface-2">
                     <td className="px-6 py-3 font-semibold tabular-nums">{linha.numero}</td>
                     <td className="px-6 py-3"><TipoBadge tipo={linha.tipo} /></td>
                     <td className="px-6 py-3 tabular-nums">{linha.emissao}</td>

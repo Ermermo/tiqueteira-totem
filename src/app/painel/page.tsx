@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { AtualizarAutomaticamente } from "@/components/ui/AtualizarAutomaticamente";
 import { PainelChamadas } from "@/components/painel/PainelChamadas";
 import { ultimasChamadas } from "@/lib/senhas";
 
@@ -13,8 +14,9 @@ async function Painel() {
 export default function PainelPage() {
   return (
     <section>
-      <h1 className="mb-4 text-lg font-semibold">Painel de chamadas</h1>
-      <Suspense fallback={<p className="text-sm text-[#a3a7c8]">Carregando...</p>}>
+      <h1 className="mb-6 font-display text-2xl font-semibold tracking-tight">Painel de chamadas</h1>
+      <AtualizarAutomaticamente />
+      <Suspense fallback={<p className="text-sm text-muted">Carregando...</p>}>
         <Painel />
       </Suspense>
     </section>

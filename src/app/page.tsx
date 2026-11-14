@@ -8,16 +8,16 @@ import { contarFila, totaisGerais } from "@/lib/senhas";
 async function VisaoGeral() {
   await connection();
   const totais = totaisGerais();
-  const icone = { size: 40, strokeWidth: 1.25 };
+  const icone = { size: 24, strokeWidth: 1.5 };
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <Card titulo="Fila prioritária" valor={contarFila("SP")} cor="text-rose-300" icone={<HeartPulse {...icone} />} />
-      <Card titulo="Fila de exames" valor={contarFila("SE")} cor="text-amber-300" icone={<FlaskConical {...icone} />} />
-      <Card titulo="Fila geral" valor={contarFila("SG")} cor="text-sky-300" icone={<Users {...icone} />} />
-      <Card titulo="Emitidas hoje" valor={totais.emitidas} cor="text-violet-300" icone={<Ticket {...icone} />} />
-      <Card titulo="Atendidas hoje" valor={totais.atendidas} cor="text-emerald-300" icone={<Check {...icone} />} />
-      <Card titulo="Tempo médio" valor={`${Math.round(totais.tempoMedioGeral)} min`} cor="text-indigo-300" icone={<Clock {...icone} />} />
+      <Card titulo="Fila prioritária" valor={contarFila("SP")} tom="sp" icone={<HeartPulse {...icone} />} />
+      <Card titulo="Fila de exames" valor={contarFila("SE")} tom="se" icone={<FlaskConical {...icone} />} />
+      <Card titulo="Fila geral" valor={contarFila("SG")} tom="sg" icone={<Users {...icone} />} />
+      <Card titulo="Emitidas hoje" valor={totais.emitidas} tom="accent" icone={<Ticket {...icone} />} />
+      <Card titulo="Atendidas hoje" valor={totais.atendidas} tom="ok" icone={<Check {...icone} />} />
+      <Card titulo="Tempo médio" valor={`${Math.round(totais.tempoMedioGeral)} min`} tom="accent" icone={<Clock {...icone} />} />
     </div>
   );
 }
@@ -25,8 +25,8 @@ async function VisaoGeral() {
 export default function Home() {
   return (
     <section>
-      <h1 className="mb-4 text-lg font-semibold">Visão geral</h1>
-      <Suspense fallback={<p className="text-sm text-[#a3a7c8]">Carregando...</p>}>
+      <h1 className="mb-6 font-display text-2xl font-semibold tracking-tight">Visão geral</h1>
+      <Suspense fallback={<p className="text-sm text-muted">Carregando...</p>}>
         <VisaoGeral />
       </Suspense>
     </section>

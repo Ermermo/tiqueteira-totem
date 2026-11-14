@@ -12,11 +12,11 @@ async function Relatorio() {
 export default function RelatorioPage() {
   return (
     <section>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold">Relatório do dia</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Relatório do dia</h1>
         <EncerrarExpediente />
       </div>
-      <Suspense fallback={<p className="text-sm text-[#a3a7c8]">Carregando...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted">Carregando...</p>}>
         <Relatorio />
       </Suspense>
     </section>

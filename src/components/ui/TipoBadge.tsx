@@ -1,10 +1,9 @@
 import type { TipoSenha } from "@/lib/senhas";
 
-// As cores de cada tipo, definidas uma vez só para quem precisar reutilizar
 const cores: Record<TipoSenha, string> = {
-  SP: "bg-rose-50 text-rose-400",
-  SE: "bg-amber-50 text-amber-500",
-  SG: "bg-sky-50 text-sky-500",
+  SP: "bg-sp-soft text-sp",
+  SE: "bg-se-soft text-se",
+  SG: "bg-sg-soft text-sg",
 };
 
 export function TipoBadge({ tipo }: { tipo: TipoSenha }) {

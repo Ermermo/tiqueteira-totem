@@ -13,10 +13,10 @@ const itens = [
 ];
 
 export function Sidebar() {
-  const rota = usePathname(); // rota atual, para destacar o item ativo
+  const rota = usePathname();
 
   return (
-    <nav aria-label="Principal" className="flex w-16 flex-col items-center gap-2 bg-white py-4">
+    <nav aria-label="Principal" className="flex w-16 flex-col items-center gap-2 border-r border-line bg-surface py-4">
       {itens.map(({ href, rotulo, Icone }) => {
         const ativo = rota === href;
         return (
@@ -26,8 +26,10 @@ export function Sidebar() {
             aria-label={rotulo}
             title={rotulo}
             aria-current={ativo ? "page" : undefined}
-            className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-indigo-400 ${
-              ativo ? "bg-indigo-50 text-indigo-500" : "text-[#a3a7c8] hover:bg-slate-50"
+            className={`relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-accent ${
+              ativo
+                ? "bg-accent-soft text-accent before:absolute before:-left-2.5 before:h-6 before:w-1 before:rounded-r before:bg-accent"
+                : "text-muted hover:bg-surface-2 hover:text-ink"
             }`}
           >
             <Icone size={22} strokeWidth={1.5} />
